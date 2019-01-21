@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ template "tweek.namespace" }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: {{ template "tweek.namespace" }}
+  name: tweek-secrets
+data:
+  tweek_pfx_public_key: {{ .Values.secrets.tweek_pfx_public_key }}
+  tweek_ssh_public_key: {{ .Values.secrets.tweek_ssh_public_key }}
+  tweek_ssh_private_key: {{ .Values.secrets.tweek_ssh_private_key }}
+  minio_secret_key: {{ .Values.secrets.minio_secret_key }}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: {{ template "tweek.namespace" }}
+  name: redis
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:alpine
+        ports:
+        - containerPort: 6379
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: {{ template "tweek.namespace" }}
+  name: redis
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: {{ template "tweek.namespace" }}
+  name: minio
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+      - name: minio
+        image: minio/minio
+        args:
+        - server
+        - /data
+        env:
+        - name: MINIO_ACCESS_KEY
+          value: AKIAIOSFODNN7EXAMPLE
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: tweek-secrets
+              key: minio_secret_key
+        ports:
+        - containerPort: 9000
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: {{ template "tweek.namespace" }}
+  name: minio
+spec:
+  selector:
+    app: minio
+  ports:
+    - port: 9000
+      targetPort: 9000
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: {{ template "tweek.namespace" }}
+  name: nats
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nats
+    spec:
+      containers:
+      - name: nats
+        image: nats:1.0.4-linux
+        ports:
+        - containerPort: 4222
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: {{ template "tweek.namespace" }}
+  name: nats
+spec:
+  selector:
+    app: nats
+  ports:
+    - port: 4222
+      targetPort: 4222

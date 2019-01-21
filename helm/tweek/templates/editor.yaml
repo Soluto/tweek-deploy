@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: {{ template "tweek.namespace" }}
+  name: editor
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: editor
+    spec:
+      containers:
+      - name: editor
+        image: soluto/tweek-editor
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        env:
+        - name: REACT_APP_GATEWAY_URL
+          value: http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .Values.domain }}
+        volumeMounts:
+        - name: tweek-secrets
+          mountPath: /run/secrets/tweek-secrets
+      volumes:
+        - name: tweek-secrets
+          secret:
+            secretName: tweek-secrets
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: {{ template "tweek.namespace" }}
+  name: editor
+spec:
+  selector:
+    app: editor
+  ports:
+    - port: 3000
+      targetPort: 3000
