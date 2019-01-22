@@ -64,3 +64,34 @@ spec:
   ports:
     - port: 80
       targetPort: 80
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: api-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: api
+
+{{- if .Values.apiAutoscaling.enabled -}}
+---
+kind: autoscaling/v2beta2
+apiVersion: autoscaling/v2beta2
+metadata:
+  name: apihpa
+  namespace: {{ template "tweek.namespace" }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: api
+  minReplicas: {{ .Values.apiAutoscaling.minReplicas }}
+  maxReplicas: {{ .Values.apiAutoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.apiAutoscaling.targetAverageUtilization }}
+{{- end -}}
