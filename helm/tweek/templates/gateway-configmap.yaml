@@ -1,0 +1,32 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: gatewayconfig
+  namespace: {{ template "tweek.namespace" }}
+data:
+  gateway.json: |
+    {
+        "upstreams": {
+            "api": "http://api",
+            "authoring": "http://authoring:3000",
+            "publishing": "http://publishing",
+            "editor": "http://editor:3000"
+        },
+        "security": {
+            "auth": {
+                "providers": {},
+                "basic_auth": {
+                  "redirect_urls": [
+                    "http://{{ .Values.domain }}"
+                  ]
+                }
+            }
+        },
+        "v1Hosts": {
+            "api": [
+            ],
+            "authoring": [
+            ]
+        }
+    }
+  gateway.k8s.json: {{ .Values.gatewayJson }}
