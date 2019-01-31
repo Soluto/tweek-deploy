@@ -2,7 +2,6 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: gatewayconfig
-  namespace: {{ template "tweek.namespace" }}
 data:
   gateway.json: |
     {
@@ -17,7 +16,7 @@ data:
                 "providers": {},
                 "basic_auth": {
                   "redirect_urls": [
-                    "http://{{ .Values.domain }}"
+                    "http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .Values.domain }}"
                   ]
                 }
             }

@@ -1,7 +1,6 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: gateway
 spec:
   replicas: {{ .Values.gatewayReplicaCount }}
@@ -14,7 +13,7 @@ spec:
     spec:
       containers:
       - name: gateway
-        image: soluto/tweek-gateway
+        image: soluto/tweek-gateway:1.0.0-rc4
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -70,7 +69,6 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: gateway
 spec:
   selector:
@@ -95,7 +93,6 @@ kind: autoscaling/v2beta2
 apiVersion: autoscaling/v2beta2
 metadata:
   name: gatewayhpa
-  namespace: {{ template "tweek.namespace" }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1beta1

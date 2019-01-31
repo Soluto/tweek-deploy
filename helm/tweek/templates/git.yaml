@@ -1,7 +1,6 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: git
 spec:
   replicas: 1
@@ -22,15 +21,28 @@ spec:
         volumeMounts:
         - name: tweek-secrets
           mountPath: /run/secrets/tweek-secrets
+        - name: gitvolume
+          mountPath: /tweek/repodata
+      initContainers:
+      - name: volume-initializer
+        image: alpine/git
+        command: [ "/bin/sh", "-c",
+          "cd /tweek/repodata ; if ! git status ; then git init --bare ; chown -R 1000:1000 . ; fi"
+        ]
+        volumeMounts:
+        - name: gitvolume
+          mountPath: /tweek/repodata
       volumes:
         - name: tweek-secrets
           secret:
             secretName: tweek-secrets
+        - name: gitvolume
+          persistentVolumeClaim:
+            claimName: gitvolume
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: git
 spec:
   selector:
@@ -39,3 +51,15 @@ spec:
     - protocol: TCP
       port: 22
       targetPort: 22
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gitvolume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.gitvolume.size }}
+  storageClassName: {{ .Values.gitvolume.storageClass }}

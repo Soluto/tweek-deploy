@@ -5,7 +5,6 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
-  namespace: {{ template "tweek.namespace" }}
   labels:
     app: {{ template "tweek.name" . }}
     chart: {{ template "tweek.chart" . }}

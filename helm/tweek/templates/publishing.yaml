@@ -1,7 +1,6 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  namespace: tweek
   name: publishing
 spec:
   replicas: 1
@@ -12,7 +11,7 @@ spec:
     spec:
       containers:
       - name: publishing
-        image: soluto/tweek-publishing
+        image: soluto/tweek-publishing:1.0.0-rc2
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 22
@@ -23,7 +22,7 @@ spec:
         - name: GIT_SERVER_PRIVATE_KEY_PATH
           value: /run/secrets/tweek-secrets/tweek_ssh_private_key
         - name: GIT_UPSTREAM_URI
-          value: ssh://git@git/tweek/repo
+          value: ssh://git@git/tweek/repodata
         - name: MINIO__Endpoint
           value: minio:9000
         - name: MINIO__AccessKey
@@ -44,7 +43,6 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: tweek
   name: publishing
 spec:
   selector:

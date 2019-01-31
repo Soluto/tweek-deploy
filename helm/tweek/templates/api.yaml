@@ -1,7 +1,6 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: api
 spec:
   replicas: {{ .Values.apiReplicaCount }}
@@ -12,7 +11,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: soluto/tweek-api
+        image: soluto/tweek-api:1.0.0-rc1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -56,7 +55,6 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: api
 spec:
   selector:
@@ -81,7 +79,6 @@ kind: autoscaling/v2beta2
 apiVersion: autoscaling/v2beta2
 metadata:
   name: apihpa
-  namespace: {{ template "tweek.namespace" }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1beta1

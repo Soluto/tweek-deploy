@@ -1,12 +1,6 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: {{ template "tweek.namespace" }}
----
-apiVersion: v1
 kind: Secret
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: tweek-secrets
 data:
   tweek_pfx_public_key: {{ .Values.secrets.tweek_pfx_public_key }}
@@ -17,7 +11,6 @@ data:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: redis
 spec:
   replicas: 1
@@ -29,13 +22,20 @@ spec:
       containers:
       - name: redis
         image: redis:alpine
+        args: ["--appendonly", "yes"]
         ports:
         - containerPort: 6379
+        volumeMounts:
+        - mountPath: /data
+          name: dbvolume
+      volumes:
+      - name: dbvolume
+        persistentVolumeClaim:
+          claimName: dbvolume
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: redis
 spec:
   selector:
@@ -44,10 +44,21 @@ spec:
     - port: 6379
       targetPort: 6379
 ---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: dbvolume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.dbvolume.size }}
+  storageClassName: {{ .Values.dbvolume.storageClass }}
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: minio
 spec:
   replicas: 1
@@ -77,7 +88,6 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: minio
 spec:
   selector:
@@ -89,7 +99,6 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: nats
 spec:
   replicas: 1
@@ -108,7 +117,6 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: {{ template "tweek.namespace" }}
   name: nats
 spec:
   selector:

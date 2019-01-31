@@ -7,10 +7,13 @@ gatewayReplicaCount: 1
 domain: gateway.192.168.99.100.xip.io
 namespace: tweek
 
-image:
-  repository: nginx
-  tag: stable
-  pullPolicy: IfNotPresent
+dbvolume:
+  size: 8Gi
+  storageClass: standard
+
+gitvolume:
+  size: 2Gi
+  storageClass: standard
 
 service:
   type: ClusterIP
