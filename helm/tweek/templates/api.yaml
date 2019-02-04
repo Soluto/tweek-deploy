@@ -35,7 +35,7 @@ spec:
         - name: Rules__Nats__Endpoint
           value: nats://tweek-nats-{{ .Release.Name }}:4222
         - name: Rules__Minio__Endpoint
-          value: tweek-minio-{{ .Release.Name }}:9000
+          value: {{ include "minio.endpoint" . }}
         - name: Rules__Minio__AccessKey
           value: {{ .Values.minioAccessKey }}
         - name: Rules__Minio__SecretKey

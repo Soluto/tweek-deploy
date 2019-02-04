@@ -24,7 +24,7 @@ spec:
         - name: GIT_UPSTREAM_URI
           value: {{ default (printf "ssh://git@tweek-git-%s/tweek/repodata" .Release.Name ) .Values.gitRepo }}
         - name: MINIO__Endpoint
-          value: tweek-minio-{{ .Release.Name }}:9000
+          value: {{ include "minio.endpoint" . }}
         - name: MINIO__AccessKey
           value: {{ .Values.minioAccessKey }}
         - name: MINIO__SecretKeyPath

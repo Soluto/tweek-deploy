@@ -15,6 +15,7 @@ imageVersions:
   publishing: 1.0.0-rc2
 
 minioAccessKey: AKIAIOSFODNN7EXAMPLE
+minioEndpoint: ""
 
 # These are default secrets. You should set your own using base64 encoding.
 secrets:

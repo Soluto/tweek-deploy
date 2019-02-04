@@ -24,6 +24,17 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 {{- end -}}
 
+{{/*
+Default minio endpoint
+*/}}
+
+{{- define "minio.endpoint" }}
+{{- if eq .Values.minioEndpoint "" -}}
+{{- printf "tweek-minio-%s:9000" .Release.Name -}}
+{{- else -}}
+{{- print .Values.minioEndpoint -}}}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Create chart name and version as used by the chart label.

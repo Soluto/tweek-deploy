@@ -35,7 +35,7 @@ spec:
         - name: TWEEKGATEWAY_SECURITY_CORS_ALLOWEDHEADERS
           value: "['*']"        
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOENDPOINT
-          value: tweek-minio-{{ .Release.Name }}:9000
+          value: {{ include "minio.endpoint" . }}
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOBUCKETNAME
           value: tweek
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOACCESSKEY
