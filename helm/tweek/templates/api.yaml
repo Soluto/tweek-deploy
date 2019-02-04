@@ -37,7 +37,7 @@ spec:
         - name: Rules__Minio__Endpoint
           value: tweek-minio-{{ .Release.Name }}:9000
         - name: Rules__Minio__AccessKey
-          value: AKIAIOSFODNN7EXAMPLE
+          value: {{ .Values.minioAccessKey }}
         - name: Rules__Minio__SecretKey
           valueFrom:
             secretKeyRef:

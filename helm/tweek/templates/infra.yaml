@@ -75,7 +75,7 @@ spec:
         - /data
         env:
         - name: MINIO_ACCESS_KEY
-          value: AKIAIOSFODNN7EXAMPLE
+          value: {{ .Values.minioAccessKey }}
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:

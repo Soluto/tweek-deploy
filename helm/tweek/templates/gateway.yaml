@@ -39,9 +39,12 @@ spec:
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOBUCKETNAME
           value: tweek
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOACCESSKEY
-          value: AKIAIOSFODNN7EXAMPLE
+          value: {{ .Values.minioAccessKey }}
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOSECRETKEY
-          value: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+          valueFrom:
+            secretKeyRef:
+              name: tweek-secrets-{{ .Release.Name }}
+              key: minio_secret_key
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOSECURE
           value: "false"
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_NATSENDPOINT

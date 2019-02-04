@@ -26,7 +26,7 @@ spec:
         - name: MINIO__Endpoint
           value: tweek-minio-{{ .Release.Name }}:9000
         - name: MINIO__AccessKey
-          value: AKIAIOSFODNN7EXAMPLE
+          value: {{ .Values.minioAccessKey }}
         - name: MINIO__SecretKeyPath
           value: /run/secrets/tweek-secrets/minio_secret_key
         - name: NATS__Endpoint
