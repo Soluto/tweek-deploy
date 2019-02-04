@@ -5,11 +5,21 @@
 apiReplicaCount: 1
 gatewayReplicaCount: 1
 domain: gateway.192.168.99.100.xip.io
-namespace: tweek
+
+imageVersions:
+  api: 1.0.0-rc1
+  authoring: 1.0.0-rc2
+  editor: 1.0.0-rc5
+  gateway: 1.0.0-rc5
+  git: latest
+  publishing: 1.0.0-rc2
 
 dbvolume:
   size: 8Gi
   storageClass: standard
+
+# set to url of your git repository to prevent creation of git pod.
+gitRepo: ""
 
 gitvolume:
   size: 2Gi
@@ -25,12 +35,8 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   path: /
-  hosts:
-    - gateway.192.168.99.100.xip.io
   tls: []
   #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

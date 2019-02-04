@@ -1,17 +1,17 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: publishing
+  name: tweek-publishing-{{ .Release.Name }}
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: publishing
+        app: tweek-publishing-{{ .Release.Name }}
     spec:
       containers:
-      - name: publishing
-        image: soluto/tweek-publishing:1.0.0-rc2
+      - name: tweek-publishing-{{ .Release.Name }}
+        image: soluto/tweek-publishing:{{ .Values.imageVersions.publishing }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 22
@@ -22,31 +22,31 @@ spec:
         - name: GIT_SERVER_PRIVATE_KEY_PATH
           value: /run/secrets/tweek-secrets/tweek_ssh_private_key
         - name: GIT_UPSTREAM_URI
-          value: ssh://git@git/tweek/repodata
+          value: {{ default (printf "ssh://git@tweek-git-%s/tweek/repodata" .Release.Name ) .Values.gitRepo }}
         - name: MINIO__Endpoint
-          value: minio:9000
+          value: tweek-minio-{{ .Release.Name }}:9000
         - name: MINIO__AccessKey
           value: AKIAIOSFODNN7EXAMPLE
         - name: MINIO__SecretKeyPath
           value: /run/secrets/tweek-secrets/minio_secret_key
         - name: NATS__Endpoint
-          value: nats://nats:4222
+          value: nats://tweek-nats-{{ .Release.Name }}:4222
         volumeMounts:
-        - name: tweek-secrets
+        - name: tweek-secrets-{{ .Release.Name }}
           mountPath: /run/secrets/tweek-secrets
       volumes:
-        - name: tweek-secrets
+        - name: tweek-secrets-{{ .Release.Name }}
           secret:
-            secretName: tweek-secrets
+            secretName: tweek-secrets-{{ .Release.Name }}
             defaultMode: 0600
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: publishing
+  name: tweek-publishing-{{ .Release.Name }}
 spec:
   selector:
-    app: publishing
+    app: tweek-publishing-{{ .Release.Name }}
   ports:
     - name: ssh
       port: 22

@@ -1,15 +1,15 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: gatewayconfig
+  name: tweek-gatewayconfig-{{ .Release.Name }}
 data:
   gateway.json: |
     {
         "upstreams": {
-            "api": "http://api",
-            "authoring": "http://authoring:3000",
-            "publishing": "http://publishing",
-            "editor": "http://editor:3000"
+            "api": "http://tweek-api-{{ .Release.Name }}",
+            "authoring": "http://tweek-authoring-{{ .Release.Name }}:3000",
+            "publishing": "http://tweek-publishing-{{ .Release.Name }}",
+            "editor": "http://tweek-editor-{{ .Release.Name }}:3000"
         },
         "security": {
             "auth": {
@@ -28,4 +28,4 @@ data:
             ]
         }
     }
-  gateway.k8s.json: {{ .Values.gatewayJson }}
+  gateway.k8s.json: {{ toJson .Values.gatewayJson | quote }}

@@ -1,38 +1,35 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: editor
+  name: tweek-editor-{{ .Release.Name }}
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: editor
+        app: tweek-editor-{{ .Release.Name }}
     spec:
       containers:
       - name: editor
-        image: soluto/tweek-editor:1.0.0-rc5
+        image: soluto/tweek-editor:{{ .Values.imageVersions.editor }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
-        env:
-        - name: REACT_APP_GATEWAY_URL
-          value: http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .Values.domain }}
         volumeMounts:
-        - name: tweek-secrets
+        - name: tweek-secrets-{{ .Release.Name }}
           mountPath: /run/secrets/tweek-secrets
       volumes:
-        - name: tweek-secrets
+        - name: tweek-secrets-{{ .Release.Name }}
           secret:
-            secretName: tweek-secrets
+            secretName: tweek-secrets-{{ .Release.Name }}
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: editor
+  name: tweek-editor-{{ .Release.Name }}
 spec:
   selector:
-    app: editor
+    app: tweek-editor-{{ .Release.Name }}
   ports:
     - port: 3000
       targetPort: 3000

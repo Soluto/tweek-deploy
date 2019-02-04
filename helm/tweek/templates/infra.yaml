@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: tweek-secrets
+  name: tweek-secrets-{{ .Release.Name }}
 data:
   tweek_pfx_public_key: {{ .Values.secrets.tweek_pfx_public_key }}
   tweek_ssh_public_key: {{ .Values.secrets.tweek_ssh_public_key }}
@@ -11,13 +11,13 @@ data:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: redis
+  name: tweek-redis-{{ .Release.Name }}
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: redis
+        app: tweek-redis-{{ .Release.Name }}
     spec:
       containers:
       - name: redis
@@ -27,19 +27,19 @@ spec:
         - containerPort: 6379
         volumeMounts:
         - mountPath: /data
-          name: dbvolume
+          name: tweek-dbvolume-{{ .Release.Name }}
       volumes:
-      - name: dbvolume
+      - name: tweek-dbvolume-{{ .Release.Name }}
         persistentVolumeClaim:
-          claimName: dbvolume
+          claimName: tweek-dbvolume-{{ .Release.Name }}
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: redis
+  name: tweek-redis-{{ .Release.Name }}
 spec:
   selector:
-    app: redis
+    app: tweek-redis-{{ .Release.Name }}
   ports:
     - port: 6379
       targetPort: 6379
@@ -47,7 +47,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: dbvolume
+  name: tweek-dbvolume-{{ .Release.Name }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -59,13 +59,13 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: minio
+  name: tweek-minio-{{ .Release.Name }}
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: minio
+        app: tweek-minio-{{ .Release.Name }}
     spec:
       containers:
       - name: minio
@@ -79,7 +79,7 @@ spec:
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: tweek-secrets
+              name: tweek-secrets-{{ .Release.Name }}
               key: minio_secret_key
         ports:
         - containerPort: 9000
@@ -88,10 +88,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: minio
+  name: tweek-minio-{{ .Release.Name }}
 spec:
   selector:
-    app: minio
+    app: tweek-minio-{{ .Release.Name }}
   ports:
     - port: 9000
       targetPort: 9000
@@ -99,13 +99,13 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: nats
+  name: tweek-nats-{{ .Release.Name }}
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: nats
+        app: tweek-nats-{{ .Release.Name }}
     spec:
       containers:
       - name: nats
@@ -117,10 +117,79 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: nats
+  name: tweek-nats-{{ .Release.Name }}
 spec:
   selector:
-    app: nats
+    app: tweek-nats-{{ .Release.Name }}
   ports:
     - port: 4222
       targetPort: 4222
+---
+
+{{- if eq .Values.gitRepo "" -}}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tweek-git-{{ .Release.Name }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tweek-git-{{ .Release.Name }}
+    spec:
+      containers:
+      - name: tweek-bare-repo
+        image: soluto/tweek-bare-repo:{{ .Values.imageVersions.git }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 22
+        env:
+        - name: PUBLIC_KEY_PATH
+          value: /run/secrets/tweek-secrets/tweek_ssh_public_key
+        volumeMounts:
+        - name: tweek-secrets-{{ .Release.Name }}
+          mountPath: /run/secrets/tweek-secrets
+        - name: tweek-gitvolume-{{ .Release.Name }}
+          mountPath: /tweek/repodata
+      initContainers:
+      - name: volume-initializer
+        image: alpine/git
+        command: [ "/bin/sh", "-c",
+          "cd /tweek/repodata ; if ! git status ; then git init --bare ; chown -R 1000:1000 . ; fi"
+        ]
+        volumeMounts:
+        - name: tweek-gitvolume-{{ .Release.Name }}
+          mountPath: /tweek/repodata
+      volumes:
+        - name: tweek-secrets-{{ .Release.Name }}
+          secret:
+            secretName: tweek-secrets-{{ .Release.Name }}
+        - name: tweek-gitvolume-{{ .Release.Name }}
+          persistentVolumeClaim:
+            claimName: tweek-gitvolume-{{ .Release.Name }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: tweek-git-{{ .Release.Name }}
+spec:
+  selector:
+    app: tweek-git-{{ .Release.Name }}
+  ports:
+    - protocol: TCP
+      port: 22
+      targetPort: 22
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: tweek-gitvolume-{{ .Release.Name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.gitvolume.size }}
+  storageClassName: {{ .Values.gitvolume.storageClass }}
+{{- end -}}

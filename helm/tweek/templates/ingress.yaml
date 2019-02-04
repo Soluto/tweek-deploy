@@ -19,20 +19,16 @@ spec:
   tls:
   {{- range .Values.ingress.tls }}
     - hosts:
-      {{- range .hosts }}
-        - {{ . }}
-      {{- end }}
+        - {{ .Values.domain }}
       secretName: {{ .secretName }}
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ . }}
+    - host: {{ .Values.domain }}
       http:
         paths:
           - path: {{ $ingressPath }}
             backend:
-              serviceName: gateway
+              serviceName: tweek-gateway-{{ .Release.Name }}
               servicePort: 80
-  {{- end }}
 {{- end }}

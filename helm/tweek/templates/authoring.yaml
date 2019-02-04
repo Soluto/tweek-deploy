@@ -1,17 +1,17 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: authoring
+  name: tweek-authoring-{{ .Release.Name }}
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: authoring
+        app: tweek-authoring-{{ .Release.Name }}
     spec:
       containers:
       - name: authoring
-        image: soluto/tweek-authoring:1.0.0-rc2
+        image: soluto/tweek-authoring:{{ .Values.imageVersions.authoring }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
@@ -23,23 +23,23 @@ spec:
         - name: GIT_USER
           value: git
         - name: GIT_URL
-          value: ssh://git@publishing/tweek/repo
+          value: ssh://git@tweek-publishing-{{ .Release.Name }}/tweek/repo
         volumeMounts:
-        - name: tweek-secrets
+        - name: tweek-secrets-{{ .Release.Name }}
           mountPath: /run/secrets/tweek-secrets
       volumes:
-        - name: tweek-secrets
+        - name: tweek-secrets-{{ .Release.Name }}
           secret:
-            secretName: tweek-secrets
+            secretName: tweek-secrets-{{ .Release.Name }}
             defaultMode: 0600
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: authoring
+  name: tweek-authoring-{{ .Release.Name }}
 spec:
   selector:
-    app: authoring
+    app: tweek-authoring-{{ .Release.Name }}
   ports:
     - port: 3000
       targetPort: 3000

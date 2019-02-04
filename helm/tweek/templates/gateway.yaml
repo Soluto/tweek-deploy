@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gateway
+  name: tweek-gateway-{{ .Release.Name }}
 spec:
   replicas: {{ .Values.gatewayReplicaCount }}
   template:
@@ -9,11 +9,11 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/gateway-configmap.yaml") . | sha256sum }}
       labels:
-        app: gateway
+        app: tweek-gateway-{{ .Release.Name }}
     spec:
       containers:
       - name: gateway
-        image: soluto/tweek-gateway:1.0.0-rc4
+        image: soluto/tweek-gateway:{{ .Values.imageVersions.gateway }}
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -35,7 +35,7 @@ spec:
         - name: TWEEKGATEWAY_SECURITY_CORS_ALLOWEDHEADERS
           value: "['*']"        
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOENDPOINT
-          value: minio:9000
+          value: tweek-minio-{{ .Release.Name }}:9000
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOBUCKETNAME
           value: tweek
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOACCESSKEY
@@ -45,7 +45,7 @@ spec:
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOSECURE
           value: "false"
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_NATSENDPOINT
-          value: nats://nats:4222
+          value: nats://tweek-nats-{{ .Release.Name }}:4222
         - name: TWEEKGATEWAY_SECURITY_TWEEKSECRETKEY_PATH
           value: /run/secrets/tweek-secrets/tweek_ssh_private_key
         - name: TWEEKGATEWAY_CONFIGFILEPATH
@@ -53,26 +53,26 @@ spec:
         - name: CONFIGOR_ENV
           value: k8s
         volumeMounts:
-        - name: tweek-secrets
+        - name: tweek-secrets-{{ .Release.Name }}
           mountPath: /run/secrets/tweek-secrets
-        - name: gatewayconfig
+        - name: tweek-gatewayconfig-{{ .Release.Name }}
           mountPath: /config
       volumes:
-        - name: tweek-secrets
+        - name: tweek-secrets-{{ .Release.Name }}
           secret:
-            secretName: tweek-secrets
+            secretName: tweek-secrets-{{ .Release.Name }}
             defaultMode: 0600
-        - name: gatewayconfig
+        - name: tweek-gatewayconfig-{{ .Release.Name }}
           configMap:
-            name: gatewayconfig
+            name: tweek-gatewayconfig-{{ .Release.Name }}
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: gateway
+  name: tweek-gateway-{{ .Release.Name }}
 spec:
   selector:
-    app: gateway
+    app: tweek-gateway-{{ .Release.Name }}
   ports:
     - port: 80
       targetPort: 80
@@ -80,24 +80,23 @@ spec:
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: gateway-pdb
+  name: tweek-gateway-pdb-{{ .Release.Name }}
 spec:
   minAvailable: 1
   selector:
     matchLabels:
-      app: gateway
-
-{{- if .Values.gatewayAutoscaling.enabled -}}
+      app: tweek-gateway-{{ .Release.Name }}
 ---
+{{- if .Values.gatewayAutoscaling.enabled -}}
 kind: autoscaling/v2beta2
 apiVersion: autoscaling/v2beta2
 metadata:
-  name: gatewayhpa
+  name: tweek-gatewayhpa-{{ .Release.Name }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1beta1
     kind: Deployment
-    name: gateway
+    name: tweek-gateway-{{ .Release.Name }}
   minReplicas: {{ .Values.gatwayAutoscaling.minReplicas }}
   maxReplicas: {{ .Values.gatwayAutoscaling.maxReplicas }}
   metrics:
