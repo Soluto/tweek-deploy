@@ -34,7 +34,7 @@ spec:
         - name: ASPNETCORE_ENVIRONMENT
           value: Development
         - name: Redis__ConnectionString
-          value: tweek-redis-{{ .Release.Name }}
+          value: tweek-redis-{{ .Release.Name }},password={{ .Values.redis.password }}
         - name: UseAddon__Rules
           value: MinioRules
         - name: RulesetVersionProvider

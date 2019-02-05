@@ -21,10 +21,12 @@ spec:
     spec:
       containers:
       - name: redis
-        image: redis:alpine
-        args: ["--appendonly", "yes"]
+        image: bitnami/redis
         ports:
         - containerPort: 6379
+        env:
+        - name: REDIS_PASSWORD
+          value: {{ .Values.redis.password }}
         resources:
           requests:
             cpu: 100m
@@ -33,7 +35,7 @@ spec:
             cpu: 2
             memory: 4G
         volumeMounts:
-        - mountPath: /data
+        - mountPath: /bitnami/redis/data
           name: tweek-dbvolume-{{ .Release.Name }}
       volumes:
       - name: tweek-dbvolume-{{ .Release.Name }}
