@@ -29,10 +29,10 @@ Default minio endpoint
 */}}
 
 {{- define "minio.endpoint" }}
-{{- if eq .Values.minioEndpoint "" -}}
+{{- if eq .Values.minio.endpoint "" -}}
 {{- printf "tweek-minio-%s:9000" .Release.Name -}}
 {{- else -}}
-{{- print .Values.minioEndpoint -}}}}
+{{- print .Values.minio.endpoint -}}
 {{- end -}}
 {{- end -}}
 

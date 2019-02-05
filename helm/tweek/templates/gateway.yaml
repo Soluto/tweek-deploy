@@ -46,7 +46,7 @@ spec:
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOBUCKETNAME
           value: tweek
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOACCESSKEY
-          value: {{ .Values.minioAccessKey }}
+          value: {{ .Values.minio.accessKey }}
         - name: TWEEKGATEWAY_SECURITY_POLICYSTORAGE_MINIOSECRETKEY
           valueFrom:
             secretKeyRef:

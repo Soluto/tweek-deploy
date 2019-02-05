@@ -3,10 +3,10 @@ kind: Secret
 metadata:
   name: tweek-secrets-{{ .Release.Name }}
 data:
-  tweek_pfx_public_key: {{ .Values.secrets.tweek_pfx_public_key }}
-  tweek_ssh_public_key: {{ .Values.secrets.tweek_ssh_public_key }}
-  tweek_ssh_private_key: {{ .Values.secrets.tweek_ssh_private_key }}
-  minio_secret_key: {{ .Values.secrets.minio_secret_key }}
+  tweek_pfx_public_key: {{ .Values.keys.tweek_pfx_public_key }}
+  tweek_ssh_public_key: {{ .Values.keys.tweek_ssh_public_key }}
+  tweek_ssh_private_key: {{ .Values.keys.tweek_ssh_private_key }}
+  minio_secret_key: {{ b64enc .Values.minio.secretKey }}
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -63,7 +63,7 @@ spec:
       storage: {{ .Values.dbvolume.size }}
   storageClassName: {{ .Values.dbvolume.storageClass }}
 ---
-{{- if eq .Values.minioEndpoint "" -}}
+{{- if eq .Values.minio.endpoint "" -}}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -83,7 +83,7 @@ spec:
         - /data
         env:
         - name: MINIO_ACCESS_KEY
-          value: {{ .Values.minioAccessKey }}
+          value: {{ .Values.minio.accessKey }}
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:

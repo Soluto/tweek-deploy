@@ -33,7 +33,7 @@ spec:
         - name: MINIO__Endpoint
           value: {{ include "minio.endpoint" . }}
         - name: MINIO__AccessKey
-          value: {{ .Values.minioAccessKey }}
+          value: {{ .Values.minio.accessKey }}
         - name: MINIO__SecretKeyPath
           value: /run/secrets/tweek-secrets/minio_secret_key
         - name: NATS__Endpoint

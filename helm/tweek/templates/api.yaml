@@ -44,7 +44,7 @@ spec:
         - name: Rules__Minio__Endpoint
           value: {{ include "minio.endpoint" . }}
         - name: Rules__Minio__AccessKey
-          value: {{ .Values.minioAccessKey }}
+          value: {{ .Values.minio.accessKey }}
         - name: Rules__Minio__SecretKey
           valueFrom:
             secretKeyRef:
