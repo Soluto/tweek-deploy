@@ -25,6 +25,13 @@ spec:
         args: ["--appendonly", "yes"]
         ports:
         - containerPort: 6379
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2
+            memory: 4G
         volumeMounts:
         - mountPath: /data
           name: tweek-dbvolume-{{ .Release.Name }}
@@ -84,9 +91,14 @@ spec:
               key: minio_secret_key
         ports:
         - containerPort: 9000
-
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 1
+            memory: 1G
 ---
-{{- end -}}
 kind: Service
 apiVersion: v1
 metadata:
@@ -98,6 +110,7 @@ spec:
     - port: 9000
       targetPort: 9000
 ---
+{{- end -}}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -114,6 +127,13 @@ spec:
         image: nats:1.0.4-linux
         ports:
         - containerPort: 4222
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
 
 ---
 kind: Service
@@ -146,6 +166,13 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 22
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
         env:
         - name: PUBLIC_KEY_PATH
           value: /run/secrets/tweek-secrets/tweek_ssh_public_key

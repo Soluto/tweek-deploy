@@ -15,6 +15,13 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 2
+            memory: 3000Mi
         env:
         - name: GIT_PUBLIC_KEY_PATH
           value: /run/secrets/tweek-secrets/tweek_ssh_public_key

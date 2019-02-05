@@ -23,6 +23,13 @@ spec:
           periodSeconds: 10
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2
+            memory: 2G
         env:
         - name: TWEEKGATEWAY_SECURITY_CORS_ENABLED
           value: "true"

@@ -18,6 +18,13 @@ spec:
         volumeMounts:
         - name: tweek-secrets-{{ .Release.Name }}
           mountPath: /run/secrets/tweek-secrets
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
       volumes:
         - name: tweek-secrets-{{ .Release.Name }}
           secret:
