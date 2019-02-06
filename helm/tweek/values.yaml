@@ -21,6 +21,7 @@ minio:
 
 redis:
   password: "pass152686847884131057"
+  endpoint: ""
 
 # Generate your own keys, pub base64 encoded version of it here
 keys:

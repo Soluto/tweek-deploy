@@ -27,12 +27,22 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Default minio endpoint
 */}}
-
 {{- define "minio.endpoint" }}
 {{- if eq .Values.minio.endpoint "" -}}
 {{- printf "tweek-minio-%s:9000" .Release.Name -}}
 {{- else -}}
 {{- print .Values.minio.endpoint -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Default redis endpoint
+*/}}
+{{- define "redis.endpoint" }}
+{{- if eq .Values.redis.endpoint "" -}}
+{{- printf "tweek-redis-%s" .Release.Name -}}
+{{- else -}}
+{{- print .Values.redis.endpoint -}}
 {{- end -}}
 {{- end -}}
 

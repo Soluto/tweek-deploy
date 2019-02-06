@@ -8,6 +8,7 @@ data:
   tweek_ssh_private_key: {{ .Values.keys.tweek_ssh_private_key }}
   minio_secret_key: {{ b64enc .Values.minio.secretKey }}
 ---
+{{- if eq .Values.redis.endpoint "" -}}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -65,6 +66,8 @@ spec:
       storage: {{ .Values.dbvolume.size }}
   storageClassName: {{ .Values.dbvolume.storageClass }}
 ---
+{{- end -}}
+
 {{- if eq .Values.minio.endpoint "" -}}
 apiVersion: extensions/v1beta1
 kind: Deployment
