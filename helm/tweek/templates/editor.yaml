@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tweek-editor-{{ .Release.Name }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tweek-editor-{{ .Release.Name }}
+    spec:
+      containers:
+      - name: editor
+        image: soluto/tweek-editor:{{ .Values.imageVersions.editor }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: tweek-secrets-{{ .Release.Name }}
+          mountPath: /run/secrets/tweek-secrets
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
+      volumes:
+        - name: tweek-secrets-{{ .Release.Name }}
+          secret:
+            secretName: tweek-secrets-{{ .Release.Name }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: tweek-editor-{{ .Release.Name }}
+spec:
+  selector:
+    app: tweek-editor-{{ .Release.Name }}
+  ports:
+    - port: 3000
+      targetPort: 3000

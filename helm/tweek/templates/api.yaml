@@ -1,0 +1,100 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tweek-api-{{ .Release.Name }}
+spec:
+  replicas: {{ .Values.apiReplicaCount }}
+  template:
+    metadata:
+      labels:
+        app: tweek-api-{{ .Release.Name }}
+    spec:
+      containers:
+      - name: api
+        image: soluto/tweek-api:{{ .Values.imageVersions.api }}
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 4
+            memory: 4G
+        env:
+        - name: PUBLIC_KEY_PATH
+          value: /run/secrets/tweek-secrets/tweek_pfx_public_key
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: Redis__ConnectionString
+          value: {{ include "redis.endpoint" . }},password={{ .Values.redis.password }}
+        - name: UseAddon__Rules
+          value: MinioRules
+        - name: RulesetVersionProvider
+          value: NatsVersionProvider
+        - name: Rules__Nats__Endpoint
+          value: nats://tweek-nats-{{ .Release.Name }}:4222
+        - name: Rules__Minio__Endpoint
+          value: {{ include "minio.endpoint" . }}
+        - name: Rules__Minio__AccessKey
+          value: {{ .Values.minio.accessKey }}
+        - name: Rules__Minio__SecretKey
+          valueFrom:
+            secretKeyRef:
+              name: tweek-secrets-{{ .Release.Name }}
+              key: minio_secret_key
+        volumeMounts:
+        - name: tweek-secrets-{{ .Release.Name }}
+          mountPath: /run/secrets/tweek-secrets
+      volumes:
+        - name: tweek-secrets-{{ .Release.Name }}
+          secret:
+            secretName: tweek-secrets-{{ .Release.Name }}
+            defaultMode: 0600
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: tweek-api-{{ .Release.Name }}
+spec:
+  selector:
+    app: tweek-api-{{ .Release.Name }}
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: tweek-api-pdb-{{ .Release.Name }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: tweek-api-{{ .Release.Name }}
+---
+{{- if .Values.apiAutoscaling.enabled -}}
+kind: autoscaling/v2beta2
+apiVersion: autoscaling/v2beta2
+metadata:
+  name: tweek-apihpa-{{ .Release.Name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: tweek-api-{{ .Release.Name }}
+  minReplicas: {{ .Values.apiAutoscaling.minReplicas }}
+  maxReplicas: {{ .Values.apiAutoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.apiAutoscaling.targetAverageUtilization }}
+{{- end -}}

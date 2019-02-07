@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tweek-authoring-{{ .Release.Name }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tweek-authoring-{{ .Release.Name }}
+    spec:
+      containers:
+      - name: authoring
+        image: soluto/tweek-authoring:{{ .Values.imageVersions.authoring }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 2
+            memory: 3000Mi
+        env:
+        - name: GIT_PUBLIC_KEY_PATH
+          value: /run/secrets/tweek-secrets/tweek_ssh_public_key
+        - name: GIT_PRIVATE_KEY_PATH
+          value: /run/secrets/tweek-secrets/tweek_ssh_private_key
+        - name: GIT_USER
+          value: git
+        - name: GIT_URL
+          value: ssh://git@tweek-publishing-{{ .Release.Name }}/tweek/repo
+        volumeMounts:
+        - name: tweek-secrets-{{ .Release.Name }}
+          mountPath: /run/secrets/tweek-secrets
+      volumes:
+        - name: tweek-secrets-{{ .Release.Name }}
+          secret:
+            secretName: tweek-secrets-{{ .Release.Name }}
+            defaultMode: 0600
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: tweek-authoring-{{ .Release.Name }}
+spec:
+  selector:
+    app: tweek-authoring-{{ .Release.Name }}
+  ports:
+    - port: 3000
+      targetPort: 3000
