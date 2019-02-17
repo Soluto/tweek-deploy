@@ -9,3 +9,4 @@ mkdir -p ssh
 mv private-key.pem ssh/id_rsa # ssh private key
 mv public_ssh ssh/id_rsa.pub # ssh public key
 rm certificate.pem # use certificate.pfx
+
