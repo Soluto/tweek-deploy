@@ -1,0 +1,12 @@
+{
+    "name": "gcp-typescript",
+    "devDependencies": {
+        "@types/node": "latest",
+        "@types/js-yaml": "3.11.1"
+    },
+    "dependencies": {
+        "@pulumi/gcp": "latest",
+        "@pulumi/kubernetes": "latest",
+        "@pulumi/pulumi": "latest"
+    }
+}
