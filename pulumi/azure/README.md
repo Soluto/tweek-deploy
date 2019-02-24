@@ -1,14 +1,13 @@
 # Pulumi for Tweek on GCP
 
 ## Requirements
- * Google Cloud account credentials
- * `gcloud` tool installed
+ * Azure account
+ * `az` tool installed
 
 ## Configuration Parameters
 |Parameter name|Description|Secret?|
 |----|----|----|
-|gcp:project|The Google Cloud project to deploy into|
-|gcp:zone|The Google Cloud zone|
+|azure:environment|The Azure environment to use (`public`, `usgovernment`, `german`, `china`)|No|
 |clusterPassword|Your new cluster password|Yes|
 |valuesYaml|Your values.yaml file which overrides the default helm values|No|
 |clusterNodeMachineType|GCP Machine type, default is n1-standard-1|No|
@@ -18,15 +17,18 @@
 To create Tweek cluster in GKE run the following commands
 
 ```bash
+az login
+az account --subscription YOUR_SUBSCRIPTION
 pulumi stack init YOUR_STACK_NAME
-pulumi config set gcp:project project-name
-pulumi config set gcp:zone us-west1-a
-pulumi config set clusterPassword somelongpassword
+pulumi config set azure:environment public
+pulumi config set clusterPassword --secret somelongpassword
+pulumi config set sshPublicKey YOUR_SSH_PUBLIC_KEY
 pulumi config set valuesYaml /path/to/values.yaml
-GOOGLE_APPLICATION_CREDENTIALS=credentials.json pulumi up
+pulumi up
 ```
 
-Where `credentials.json` is the file with credentials to your google account created in google console.
+Where `YOUR_SUBSCRIPTION` is the id of the subscription you want to use. You can skip this command if you only have one.
 Instead of `YOUR_STACK_NAME` write the name you'd like to give to your stack.
 The commands in the form of `pulumi config set` are used to set the configuration parameters,
 described in the [configuration parameters](#configuration-parameters) section.
+Instead of `YOUR_SSH_PUBLIC_KEY` put your ssh public key, which can be generated using `ssh-keygen -t rsa -f key.rsa`
