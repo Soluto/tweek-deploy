@@ -1,0 +1,15 @@
+name: tweek
+runtime: nodejs
+description: Pulumi for Tweek on Azure
+template:
+  config:
+    azure:environment:
+      description: The Azure environment to use (`public`, `usgovernment`, `german`, `china`)
+      default: public
+    password:
+      description: Your cluster password
+      secret: true
+    sshPublicKey:
+      description: Your SSH public key (generate with `ssh-keygen -t rsa -f key.rsa`)
+    valuesYaml:
+      description: Path to your values.yaml
