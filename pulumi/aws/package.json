@@ -1,0 +1,12 @@
+{
+    "name": "aws-typescript",
+    "devDependencies": {
+        "@types/node": "latest"
+    },
+    "dependencies": {
+        "@pulumi/pulumi": "latest",
+        "@pulumi/kubernetes": "latest",
+        "@pulumi/eks": "latest",
+        "@pulumi/awsx": "latest"
+    }
+}

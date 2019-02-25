@@ -1,0 +1,22 @@
+name: tweek
+runtime: nodejs
+description: Tweek deployment from AWS
+template:
+  config:
+    aws:region:
+      description: The AWS region to deploy into
+      default: us-west-2
+    valuesYaml:
+      description: Path to your values.yaml
+    nodeType:
+      description: Requested node type
+      default: t2.medium
+    desiredCapacity:
+      description: Requested number of nodes in the cluster
+      default: 2
+    minSize:
+      description: Minimum number of nodes in the cluster
+      default: 2
+    maxSize:
+      description: Maximum number of nodes in the cluster
+      default: 4

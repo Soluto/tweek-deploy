@@ -1,4 +1,4 @@
-# Pulumi for Tweek on GCP
+# Pulumi for Tweek on Azure
 
 ## Requirements
  * Azure account
