@@ -9,7 +9,6 @@
 |----|----|----|
 |gcp:project|The Google Cloud project to deploy into|
 |gcp:zone|The Google Cloud zone|
-|clusterPassword|Your new cluster password|Yes|
 |valuesYaml|Your values.yaml file which overrides the default helm values|No|
 |clusterNodeMachineType|GCP Machine type, default is n1-standard-1|No|
 |clusterNodeCount|Number of K8s nodes|No|

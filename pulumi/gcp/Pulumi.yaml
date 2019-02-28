@@ -8,9 +8,6 @@ template:
     gcp:zone:
       description: The Google Cloud zone
       default: us-west1-a
-    clusterPassword:
-      description: Your new cluster password
-      secret: true
     valuesYaml:
       description: Your values.yaml file which overrides the default helm values
     clusterNodeMachineType:
