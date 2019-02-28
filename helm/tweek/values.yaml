@@ -40,10 +40,6 @@ gitvolume:
   size: 2Gi
   storageClass: standard
 
-service:
-  type: ClusterIP
-  port: 80
-
 ingress:
   enabled: true
   annotations: {}
