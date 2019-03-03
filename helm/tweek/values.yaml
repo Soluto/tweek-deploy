@@ -9,10 +9,10 @@ domain: gateway.192.168.99.100.xip.io
 imageVersions:
   api: 1.0.0-rc1
   authoring: 1.0.0-rc2
-  editor: 1.0.0-rc5
-  gateway: 1.0.0-rc5
+  editor: 1.0.0-rc9
+  gateway: 1.0.0-rc8
   git: latest
-  publishing: 1.0.0-rc2
+  publishing: 1.0.0-rc3
 
 minio:
   accessKey: AKIAIOSFODNN7EXAMPLE
