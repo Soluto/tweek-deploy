@@ -16,8 +16,8 @@
 |minSize|Minimum number of nodes in the cluster|
 |maxSize|Maximum number of nodes in the cluster|
 
-## Creating Tweek GKE cluster
-To create Tweek cluster in GKE run the following commands
+## Creating Tweek EKS cluster
+To create Tweek cluster in EKS run the following commands
 
 ```bash
 pulumi stack init YOUR_STACK_NAME
