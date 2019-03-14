@@ -1,0 +1,16 @@
+name: tweek
+runtime: nodejs
+description: Tweek deployment for GCP
+template:
+  config:
+    gcp:project:
+      description: The Google Cloud project to deploy into
+    gcp:zone:
+      description: The Google Cloud zone
+      default: us-west1-a
+    valuesYaml:
+      description: Your values.yaml file which overrides the default helm values
+    clusterNodeMachineType:
+      description: GCP Machine type, default is n1-standard-1
+    clusterNodeCount:
+      description: Number of K8s nodes

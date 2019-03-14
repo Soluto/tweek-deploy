@@ -20,9 +20,14 @@ spec:
       labels:
         app: tweek-redis-{{ .Release.Name }}
     spec:
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 1001
       containers:
       - name: redis
         image: bitnami/redis
+        securityContext:
+          runAsUser: 1001
         ports:
         - containerPort: 6379
         env:
