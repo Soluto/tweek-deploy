@@ -6,8 +6,9 @@
  * `aws-iam-authenticator` tool installed
 
 ## Configuration Parameters
+
 |Parameter name|Description|
-|----|----|----|
+|----|----|
 |aws:region|The AWS region to use (e.g.: `us-east-1`)|
 |valuesYaml|Your values.yaml file which overrides the default helm values|
 |nodeType|Requested node type|
