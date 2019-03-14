@@ -9,7 +9,7 @@ Run the following command:
 ```
 helm upgrade --install --namespace TWEEK --values /path/to/values.yaml test tweek/
 ```
-Instead of `TWEEK` use the 
+Instead of `TWEEK` use the relevant namespace
 
 ## Parameters in `values.yaml`
 
