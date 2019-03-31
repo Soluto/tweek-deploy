@@ -21,7 +21,6 @@ spec:
         app: tweek-redis-{{ .Release.Name }}
     spec:
       securityContext:
-        runAsUser: 1001
         fsGroup: 1001
       containers:
       - name: redis
