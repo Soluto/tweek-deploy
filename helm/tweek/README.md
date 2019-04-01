@@ -29,6 +29,7 @@ Instead of `TWEEK` use the relevant namespace
 |gatewayJson|This value overrides gateway.json configuration file of tweek gateway|
 |apiAutoscaling|Autoscaling rules for API|
 |gatewayAutoscaling|Autoscaling rules for gateway|
+|useIstio|This will turn on required modifications for proper istio sidecar injection|
 
 ### Autoscaling configuration
 

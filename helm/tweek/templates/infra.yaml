@@ -128,6 +128,10 @@ spec:
   replicas: 1
   template:
     metadata:
+      {{- if .Values.useIstio -}}
+      annotations:
+        sidecar.istio.io/inject: "false"
+      {{ end -}}   
       labels:
         app: tweek-nats-{{ .Release.Name }}
     spec:

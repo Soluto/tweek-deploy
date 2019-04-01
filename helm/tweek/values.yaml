@@ -65,3 +65,5 @@ gatewayAutoscaling:
   minReplicas: 2
   maxReplicas: 4
   targetAverageUtilization: 50
+
+useIstio: false
