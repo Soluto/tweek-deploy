@@ -1,9 +1,12 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tweek-api-{{ .Release.Name }}
 spec:
   replicas: {{ .Values.apiReplicaCount }}
+  selector:
+    matchLabels:
+      app: tweek-api-{{ .Release.Name }}
   template:
     metadata:
       labels:

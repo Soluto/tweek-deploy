@@ -1,9 +1,12 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tweek-gateway-{{ .Release.Name }}
 spec:
   replicas: {{ .Values.gatewayReplicaCount }}
+  selector:
+    matchLabels:
+      app: tweek-gateway-{{ .Release.Name }}
   template:
     metadata:
       annotations:

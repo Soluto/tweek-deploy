@@ -9,12 +9,15 @@ data:
   minio_secret_key: {{ b64enc .Values.minio.secretKey }}
 ---
 {{- if eq .Values.redis.endpoint "" -}}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tweek-redis-{{ .Release.Name }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: tweek-redis-{{ .Release.Name }}
   template:
     metadata:
       labels:
@@ -73,12 +76,15 @@ spec:
 {{- end -}}
 
 {{- if eq .Values.minio.endpoint "" -}}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tweek-minio-{{ .Release.Name }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: tweek-minio-{{ .Release.Name }}
   template:
     metadata:
       labels:
@@ -120,12 +126,15 @@ spec:
       targetPort: 9000
 ---
 {{- end -}}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tweek-nats-{{ .Release.Name }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: tweek-nats-{{ .Release.Name }}
   template:
     metadata:
       labels:
@@ -158,12 +167,15 @@ spec:
 ---
 
 {{- if eq .Values.gitRepo "" -}}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tweek-git-{{ .Release.Name }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: tweek-git-{{ .Release.Name }}
   template:
     metadata:
       labels:
